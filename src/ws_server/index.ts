@@ -26,6 +26,7 @@ export class App {
 }
 
 export class User {
+    connection: WebSocket;
     name: string;
     password: string;
     id: number;
@@ -33,7 +34,8 @@ export class User {
 
     static counter = 1;
 
-    constructor(name: string, password: string) {
+    constructor(connection: WebSocket, name: string, password: string) {
+        this.connection = connection;
         this.name = name;
         this.password = password;
         this.id = User.counter;
@@ -77,7 +79,7 @@ const app = new App();
 wss.on('connection', (ws: WebSocket) => {
     console.log('New client connected');
 
-    const user = new User('', '');
+    const user = new User(ws, '', '');
 
     ws.on('message', (message: string) => {
         console.log(`Received message: ${message}`);
@@ -157,6 +159,9 @@ wss.on('connection', (ws: WebSocket) => {
                 break;
             case 'create_room':
                 const room = new Room();
+
+                //
+
                 room.addPlayer(user);
                 app.addRoom(room);
 
@@ -179,6 +184,53 @@ wss.on('connection', (ws: WebSocket) => {
                         JSON.stringify({
                             type: 'update_room',
                             data: JSON.stringify(rooms),
+                            id: 0,
+                        })
+                    );
+                });
+
+                break;
+            case 'add_user_to_room':
+                const current_room = app.rooms.filter(
+                    (room) => room.id === msg.data.indexRoom
+                )[0];
+
+                current_room.addPlayer(user);
+
+                let current_rooms: Object[] = [];
+
+                app.rooms.forEach((room) => {
+                    if (room.players.length === 1) {
+                        current_rooms.push({
+                            roomId: room.id,
+                            roomUsers: [
+                                {
+                                    name: room.players[0].name,
+                                    index: room.players[0].id,
+                                },
+                            ],
+                        });
+                    }
+                });
+
+                wss.clients.forEach((client) => {
+                    client.send(
+                        JSON.stringify({
+                            type: 'update_room',
+                            data: JSON.stringify(current_rooms),
+                            id: 0,
+                        })
+                    );
+                });
+
+                current_room.players.forEach((player, index) => {
+                    player.connection.send(
+                        JSON.stringify({
+                            type: 'create_game',
+                            data: JSON.stringify({
+                                idGame: 1,
+                                idPlayer: index,
+                            }),
                             id: 0,
                         })
                     );
