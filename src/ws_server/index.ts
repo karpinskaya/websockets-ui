@@ -121,20 +121,18 @@ wss.on('connection', (ws: WebSocket) => {
                     wins: user.wins,
                 }));
 
-                wss.clients.forEach((client) => {
-                    client.send(
-                        JSON.stringify({
-                            type: 'reg',
-                            data: JSON.stringify({
-                                name: msg.data.name,
-                                index: 1,
-                                error: false,
-                                errorText: '',
-                            }),
-                            id: 0,
-                        })
-                    );
-                });
+                ws.send(
+                    JSON.stringify({
+                        type: 'reg',
+                        data: JSON.stringify({
+                            name: msg.data.name,
+                            index: 1,
+                            error: false,
+                            errorText: '',
+                        }),
+                        id: 0,
+                    })
+                );
 
                 wss.clients.forEach((client) => {
                     client.send(
