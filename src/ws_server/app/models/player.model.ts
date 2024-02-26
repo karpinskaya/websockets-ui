@@ -1,36 +1,30 @@
-interface Point {
+export interface Point {
     x: number;
     y: number;
 }
 
-interface IncomingShip {
+export interface IncomingShip {
     position: Point;
     direction: boolean;
     type: 'huge' | 'large' | 'medium' | 'small';
     length: 4 | 3 | 2 | 1;
 }
 
-interface Ship extends IncomingShip {
+export interface Ship extends IncomingShip {
     availablePoints: Point[];
 }
 
-interface ShipResponse {
+export interface ShipResponse {
     status: string;
     points: Point[];
 }
 
 export class Player {
-    // id: number;
     userId: number;
     ships: Ship[] = [];
 
-    // static counter = 1;
-
     constructor(userId: number) {
-        // this.id = Player.counter;
         this.userId = userId;
-
-        // Player.counter = Player.counter + 1;
     }
 
     processShips(point: Point) {

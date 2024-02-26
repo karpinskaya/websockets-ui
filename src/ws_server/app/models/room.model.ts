@@ -40,32 +40,26 @@ export class Rooms {
         return this.rooms.filter((room) => room.id === roomId)[0];
     }
 
+    getRoomByGameId(gameId: number) {
+        return this.rooms.filter((room) => room.game.id === gameId)[0];
+    }
+
+    getRoomByUserId(userId: number) {
+        return this.rooms.filter(
+            (room) =>
+                room.users[0]?.id === userId || room.users[1]?.id === userId
+        )[0];
+    }
+
     getGameById(gameId: number) {
         return this.rooms.filter((room) => room.game.id === gameId)[0].game;
     }
 
-    getUpdateRoomResponse() {
-        const updateRoomResponse: {
-            roomId: number;
-            roomUsers: { name: string; index: number }[];
-        }[] = [];
-
-        const roomsWithOneUser = this.getRoomsWithOneUser();
-
-        roomsWithOneUser.forEach((room) => {
-            const roomData = {
-                roomId: room.id,
-                roomUsers: [
-                    {
-                        name: room.users[0].name,
-                        index: room.users[0].id,
-                    },
-                ],
-            };
-
-            updateRoomResponse.push(roomData);
+    deleteRoomById(roomId: number) {
+        const index = this.rooms.findIndex((room) => {
+            room.id === roomId;
         });
 
-        return updateRoomResponse;
+        this.rooms.splice(index, 1);
     }
 }
