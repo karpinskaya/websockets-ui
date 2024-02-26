@@ -62,8 +62,6 @@ class App {
                             user.connection = ws;
                         }
 
-                        console.log(user);
-
                         this.userService.reg(user, error, errorText);
 
                         this.roomService.updateRoom(
@@ -91,13 +89,11 @@ class App {
 
                         break;
                     case WS_MSGS.ADD_USER_TO_ROOM:
-                        console.log(this.rooms.rooms);
-
                         if (
-                            this.rooms.getRoomById(msg.data.indexRoom).users
-                                .length === 0 &&
                             this.rooms.getRoomById(msg.data.indexRoom).users[0]
-                                .id === user.id
+                                ?.id === user.id ||
+                            this.rooms.getRoomById(msg.data.indexRoom).users[1]
+                                ?.id === user.id
                         ) {
                             return;
                         }
@@ -145,6 +141,10 @@ class App {
                         const currentGameRoom = this.rooms.getRoomByGameId(
                             msg.data.gameId
                         );
+
+                        if (user.id !== currentGameRoom.game.turn) {
+                            return;
+                        }
 
                         const player = user;
 

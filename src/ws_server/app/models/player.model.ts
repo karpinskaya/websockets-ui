@@ -1,3 +1,5 @@
+import { WS_MSGS } from '../utils/constants';
+
 export interface Point {
     x: number;
     y: number;
@@ -31,7 +33,7 @@ export class Player {
         let shipId = -1;
         let pointId = -1;
 
-        let res: ShipResponse = { status: 'miss', points: [] };
+        let res: ShipResponse = { status: WS_MSGS.MISS, points: [] };
 
         for (let i = 0; i < this.ships.length; i++) {
             for (let j = 0; j < this.ships[i].availablePoints.length; j++) {
@@ -52,70 +54,70 @@ export class Player {
                 const isFinished = this.setIsFinished();
 
                 if (isFinished) {
-                    res = { status: 'finish', points: [] };
+                    res.status = WS_MSGS.FINISH;
                 } else {
-                    res = { status: 'killed', points: [] };
+                    res.status = WS_MSGS.KILLED;
+                }
 
-                    if (!this.ships[shipId].direction) {
-                        res.points.push({
-                            x: this.ships[shipId].position.x - 1,
-                            y: this.ships[shipId].position.y,
-                        });
-                        res.points.push({
-                            x:
-                                this.ships[shipId].position.x +
-                                this.ships[shipId].length,
-                            y: this.ships[shipId].position.y,
-                        });
-
-                        for (
-                            let i = this.ships[shipId].position.x - 1;
-                            i <=
+                if (!this.ships[shipId].direction) {
+                    res.points.push({
+                        x: this.ships[shipId].position.x - 1,
+                        y: this.ships[shipId].position.y,
+                    });
+                    res.points.push({
+                        x:
                             this.ships[shipId].position.x +
-                                this.ships[shipId].length;
-                            i++
-                        ) {
-                            res.points.push({
-                                x: i,
-                                y: this.ships[shipId].position.y - 1,
-                            });
-                            res.points.push({
-                                x: i,
-                                y: this.ships[shipId].position.y + 1,
-                            });
-                        }
-                    } else {
+                            this.ships[shipId].length,
+                        y: this.ships[shipId].position.y,
+                    });
+
+                    for (
+                        let i = this.ships[shipId].position.x - 1;
+                        i <=
+                        this.ships[shipId].position.x +
+                            this.ships[shipId].length;
+                        i++
+                    ) {
                         res.points.push({
-                            x: this.ships[shipId].position.x,
+                            x: i,
                             y: this.ships[shipId].position.y - 1,
                         });
                         res.points.push({
-                            x: this.ships[shipId].position.x,
-                            y:
-                                this.ships[shipId].position.y +
-                                this.ships[shipId].length,
+                            x: i,
+                            y: this.ships[shipId].position.y + 1,
                         });
-
-                        for (
-                            let i = this.ships[shipId].position.y - 1;
-                            i <=
+                    }
+                } else {
+                    res.points.push({
+                        x: this.ships[shipId].position.x,
+                        y: this.ships[shipId].position.y - 1,
+                    });
+                    res.points.push({
+                        x: this.ships[shipId].position.x,
+                        y:
                             this.ships[shipId].position.y +
-                                this.ships[shipId].length;
-                            i++
-                        ) {
-                            res.points.push({
-                                x: this.ships[shipId].position.x - 1,
-                                y: i,
-                            });
-                            res.points.push({
-                                x: this.ships[shipId].position.x + 1,
-                                y: i,
-                            });
-                        }
+                            this.ships[shipId].length,
+                    });
+
+                    for (
+                        let i = this.ships[shipId].position.y - 1;
+                        i <=
+                        this.ships[shipId].position.y +
+                            this.ships[shipId].length;
+                        i++
+                    ) {
+                        res.points.push({
+                            x: this.ships[shipId].position.x - 1,
+                            y: i,
+                        });
+                        res.points.push({
+                            x: this.ships[shipId].position.x + 1,
+                            y: i,
+                        });
                     }
                 }
             } else {
-                res = { status: 'shot', points: [] };
+                res = { status: WS_MSGS.SHOT, points: [] };
             }
         }
 
